@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Chapter 6: The Power of .data()</title>
+        <script type="text/javascript" src="../d3.js"></script>
+        <style type="text/css">
+            div.bar {
+                display: inline-block;
+                width: 20px;
+                height: 75px;
+                background-color:yellowgreen;
+                margin-right: 2px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            // We'll be generating a random dataset
+            var dataset = []
+            for (var i = 0; i < 25; i++) {
+                var newNumber = Math.random() * 30;
+                dataset.push(newNumber); // How to add elements to a js array
+            }
+
+            d3.select("body").selectAll("div")
+                .data(dataset)
+                .enter()
+                .append("div")
+                .attr("class", "bar")
+                .style("height", function(d) {
+                    var barHeight = d * 10;
+                    return barHeight + "px";
+                });
+        </script>
+    </body>
+</html>
