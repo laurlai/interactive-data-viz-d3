@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Chapter 9: Bar Chart with Updates</title>
+        <script type="text/javascript" src="../d3.js"></script>
+        <style type="text/css">
+        </style>
+    </head>
+
+    <body>
+        <p>Click this to update the data values (once)</p>
+        <script type="text/javascript">
+            var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+                            11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+                            
+            // Establish dimensions of svg
+            var w = 600;
+            var h = 250;
+            var barPadding = 1;
+
+            var xScale = d3.scaleBand()
+                            .domain(d3.range(dataset.length))
+                            .rangeRound([0, w])
+                            .paddingInner(0.05);
+
+            var yScale = d3.scaleLinear()
+                            .domain([0, d3.max(dataset)])
+                            .rangeRound([0, h]);
+
+            // Create an svg element
+            var svg = d3.select("body")
+                        .append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+
+            svg.selectAll("rect")
+                .data(dataset)
+                .enter()
+                .append("rect")
+                .attr("x", function(d, i) {
+                    // Index in dataset * width of svg / length of dataset (number of values)
+                    return xScale(i);
+                })
+                .attr("y", function(d) {
+                    // Because svg has origin reference point in upper left, must move origin to height - data value
+                    // Including bars scaled up as d * 4
+                    return h - yScale(d);
+                })
+                // Ensure all data points are accommodated in svg by dynamically setting width variable
+                .attr("width", xScale.bandwidth())
+                // Attribute height of bar to data point
+                .attr("height", function(d) {
+                    // Scale up bar height
+                    return yScale(d);
+                })
+                // Dynamically change the fill color by basing rgb values by dataset value
+                .attr("fill", function(d) {
+                    return "rgb(0, " + Math.round(d * 10) + ", " + Math.round(d * 15) + ")";
+                });
+            
+            svg.selectAll("text")
+                .data(dataset)
+                .enter()
+                .append("text")
+                .text(function(d) {
+                    return d;
+                })
+                .attr("x", function(d, i) {
+                    return xScale(i) + xScale.bandwidth() / 2;
+                })
+                .attr("y", function(d) {
+                    return h - yScale(d) + 14;
+                })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", "11px")
+                .attr("fill", "white")
+                .attr("text-anchor", "middle");
+
+                d3.select("p")
+                    .on("click", function() {
+                        // Change the data
+                        dataset = [ 11, 12, 15, 20, 18, 17, 16, 18, 23, 25,
+								5, 10, 13, 19, 21, 25, 22, 18, 15, 13 ];
+                        // Re-bind new values to existing elements
+                        svg.selectAll("rect")
+                            .data(dataset);
+                        // Update visuals, just height and y values
+                        svg.selectAll("rect")
+                            .data(dataset)
+                            .transition()
+                            .duration(1000)
+                            .attr("y", function(d) {
+                                return h - yScale(d);
+                            })
+                            .attr("height", function(d) {
+                                return yScale(d);
+                            })
+                            .attr("fill", function(d) {
+                                return "rgb(0, " + Math.round(d * 10) + ", " + Math.round(d * 15) + ")";
+                            });
+                        svg.selectAll("text")
+                            .data(dataset)
+                            .transition()
+                            .duration(1000)
+                            .text(function(d) {
+                                return d;
+                            })
+                            .attr("x", function(d, i) {
+                                return xScale(i) + xScale.bandwidth() / 2;
+                            })
+                            .attr("y", function(d) {
+                                return h - yScale(d) + 14;
+                            })
+                });
+                
+        </script>
+    </body>
+</html>
